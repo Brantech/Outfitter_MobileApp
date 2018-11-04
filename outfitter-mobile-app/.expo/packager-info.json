@@ -2,8 +2,8 @@
   "devToolsPort": 19002,
   "expoServerPort": 19000,
   "packagerPort": 19001,
-  "packagerPid": 10749,
-  "expoServerNgrokUrl": null,
-  "packagerNgrokUrl": null,
-  "ngrokPid": null
+  "packagerPid": 2704,
+  "expoServerNgrokUrl": "https://ie-r85.anonymous.outfitter-mobile-app.exp.direct",
+  "packagerNgrokUrl": "https://packager.ie-r85.anonymous.outfitter-mobile-app.exp.direct",
+  "ngrokPid": 16864
 }
