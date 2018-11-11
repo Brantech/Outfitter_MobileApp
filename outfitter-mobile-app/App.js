@@ -1,16 +1,20 @@
+/**
+ * Main Container for the UI
+ */
+
 import React from 'react';
 import { StyleSheet, Text, View, TextInput, Button, ToastAndroid, TouchableHighlight } from 'react-native';
 import { Header } from 'react-native-elements';
 
 export default class App extends React.Component {
   
-  constructor(props){
+  constructor(props) {
     super(props);
     this.login = this.login.bind(this);
     this.state = {user: '', pass: ''};
   }
 
-  login(){
+  login() {
     ToastAndroid.show(`u: ${this.state.user} p: ${this.state.pass}`, ToastAndroid.SHORT);
   }
 
