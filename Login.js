@@ -6,9 +6,9 @@ import Wallpaper from './components/Wallpaper';
 import ButtonSubmit from './components/ButtonSubmit';
 import SignupSection from './components/SignupSection';
 
-export default class App extends Component {
+export default class Login extends Component {
     state = {
-        fontLoaded: false
+        fontLoaded: false,
     };
 
     async componentDidMount() {

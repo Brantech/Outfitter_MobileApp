@@ -10,6 +10,7 @@ import {
     View,
 } from 'react-native';
 import spinner from '../assets/images/loading.gif';
+import {widgetWrap, ScreenEnum} from '../MainContainer';
 
 const DEVICE_WIDTH = Dimensions.get('window').width;
 const MARGIN = 40;
@@ -42,10 +43,11 @@ export default class ButtonSubmit extends Component {
         }, 2000);
 
         setTimeout(() => {
-            // TODO - Go to the home page screen...
             this.setState({isLoading: false});
             this.buttonAnimated.setValue(0);
             this.growAnimated.setValue(0);
+
+            widgetWrap.displayScreen(ScreenEnum.Survey);
         }, 2300);
     }
 

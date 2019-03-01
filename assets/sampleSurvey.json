@@ -1,0 +1,13 @@
+[
+        {
+            "question": "Is Chicago-style pizza actually pizza?",
+            "choices": ["Yes", "No", "It is treasonous to even ask"],
+            "multiselect": false
+        },
+
+        {
+            "question": "How much pizza is enough?",
+            "choices": ["Yes", "Never enough", "All of it"],
+            "multiselect": true
+        }
+]
