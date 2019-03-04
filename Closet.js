@@ -3,26 +3,32 @@ import {
     View, 
     ScrollView, 
     Text, 
-    TouchableOpacity,
     Dimensions,
     Image
 } from 'react-native';
+
+var shirt = require("./assets/images/clothingSample.jpg");
+var shirt2 = require("./assets/images/shirt2.jpg");
+var pants = require("./assets/images/jeans.jpg");
+var shorts = require("./assets/images/shorts.jpg");
 
 export default class Closet extends Component {
     constructor () {
         super()
     }
 
+    goToOutfits() {
+        
+    }
+
     render() {
         var clean = [];
         var dirty = [];
 
-        for(var i = 0; i < 10; i++) {
-            clean.push(<Item key={i} src="./assets/images/clothingSample.jpg"/>);
-        }
-        for(var i = 0; i < 10; i++) {
-            dirty.push(<Item key={i} src="./assets/images/clothingSample.jpg"/>);
-        }
+        clean.push(<Item key={0} src={shirt}/>);
+        clean.push(<Item key={1} src={pants}/>);
+        dirty.push(<Item key={0} src={shirt2}/>);
+        dirty.push(<Item key={1} src={shorts}/>);
         
         return (
             <View style={{width: "100%", height: "100%"}}>
@@ -47,34 +53,6 @@ export default class Closet extends Component {
                         {dirty}
                     </ScrollView>
                 </View>
-
-                <View style={{backgroundColor: "#4285F4", height: 80.0, width: "100%", flexDirection: "row", padding: 0}}>
-                    <View style={style.buttonWrap}>
-                        <TouchableOpacity style={style.button}>
-                            <Text style={style.buttonText}>Closet</Text>
-                        </TouchableOpacity>
-                    </View>
-                    <View style={style.buttonWrap}>
-                        <TouchableOpacity style={style.button}>
-                            <Text style={style.buttonText}>Outfit</Text>
-                        </TouchableOpacity>
-                    </View>
-                    <View style={style.buttonWrap}>
-                        <TouchableOpacity style={style.button}>
-                            <Text style={style.buttonText}>History</Text>
-                        </TouchableOpacity>
-                    </View>
-                    <View style={style.buttonWrap}>
-                        <TouchableOpacity style={style.button}>
-                            <Text style={style.buttonText}>Feed</Text>
-                        </TouchableOpacity>
-                    </View>
-                    <View style={style.buttonWrap}>
-                        <TouchableOpacity style={style.button}>
-                            <Text style={style.buttonText}>Profile</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
             </View>
         );
     }
@@ -94,31 +72,13 @@ class Item extends Component {
 
         return (
             <View style={style.item}>
-                <Image style={{width: "100%", height: "100%"}} source={{uri: "http://www.tucacasbeachhotel.com/images/fc-Icon_mg14/Icon-One-Thousand-Underground-Tee-0001.jpg"}}/>
+                <Image style={{width: "100%", height: "100%"}} source={this.props.src}/>
             </View>
         );
     }
 }
 
 const style = {
-    buttonWrap: {
-        flex: 1, 
-        height: "100%", 
-        backgroundColor: "white", 
-        borderWidth: 1,
-        borderColor: "gainsboro",
-    },
-
-    button: {
-        height: "100%",
-        width: "100%",
-        alignContent: "center",
-        justifyContent: "center",
-    },
-
-    buttonText: {
-        textAlign: "center",
-    },
 
     itemList: {
         height: "100%", 

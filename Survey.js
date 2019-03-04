@@ -129,6 +129,10 @@ export default class Survey extends Component {
     }
 
     render() {
+        if(questions.length === 0) {
+            widgetWrap.displayScreen(ScreenEnum.Closet);
+        }
+
         var question = <Question key={this.state.question} question={questions[this.state.question]} parent={this}/>;
 
         return (

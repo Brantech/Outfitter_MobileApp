@@ -3,8 +3,11 @@ import {Font} from 'expo';
 import Survey from './Survey';
 import Login from './Login';
 import Closet from './Closet';
+import Outfits from './Outfits';
+import NavWrap from './NavWrap';
+import Profile from './Profile';
 
-export var ScreenEnum = {Login: 1, Survey: 2, Closet: 3};
+export var ScreenEnum = {Login: 1, Survey: 2, Closet: 3, Outfits: 4, Profile: 7};
 
 export var widgetWrap;
 
@@ -44,8 +47,13 @@ export default class MainContainer extends Component {
                 widget = <Survey/>
                 break;
             case ScreenEnum.Closet:
-                widget = <Closet/>
+                widget = <NavWrap content={<Closet/>} selected={0}/>
                 break;
+            case ScreenEnum.Outfits:
+                widget = <NavWrap content={<Outfits />} selected={1}/>
+                break;
+            case ScreenEnum.Profile:
+                widget = <NavWrap content={<Profile />}  selected={4}/>
         }
 
         return (
