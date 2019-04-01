@@ -4,11 +4,28 @@ import Dimensions from 'Dimensions';
 import {StyleSheet, View, TextInput, Image} from 'react-native';
 
 export default class UserInput extends Component {
+    constructor(props) {
+        super(props)
+
+        this.state = {
+            text: ""
+        }
+    }
+    
+    focus() {
+        this.field.focus();
+    }
+
+    getText() {
+
+        return this.state["text"]
+    }
+
     render() {
         return (
             <View style={styles.inputWrapper}>
-                <Image source={this.props.source} style={styles.inlineImg} />
                 <TextInput
+                    ref={(input) => {this.field = input}}
                     style={styles.input}
                     placeholder={this.props.placeholder}
                     secureTextEntry={this.props.secureTextEntry}
@@ -17,6 +34,9 @@ export default class UserInput extends Component {
                     returnKeyType={this.props.returnKeyType}
                     placeholderTextColor="white"
                     underlineColorAndroid="transparent"
+                    onSubmitEditing={this.props.onSubmitEditing}
+                    blurOnSubmit={false}
+                    onChangeText={(text) => this.setState({text: text})}
                 />
             </View>
         );
@@ -24,7 +44,6 @@ export default class UserInput extends Component {
 }
 
 UserInput.propTypes = {
-    source: PropTypes.number.isRequired,
     placeholder: PropTypes.string.isRequired,
     secureTextEntry: PropTypes.bool,
     autoCorrect: PropTypes.bool,
@@ -40,12 +59,13 @@ const styles = StyleSheet.create({
         width: DEVICE_WIDTH - 40,
         height: 40,
         marginHorizontal: 20,
-        paddingLeft: 45,
+        //paddingLeft: 45,
+        paddingLeft: 20,
         borderRadius: 20,
         color: '#ffffff',
     },
     inputWrapper: {
-        flex: 1,
+        marginBottom: 15
     },
     inlineImg: {
         position: 'absolute',

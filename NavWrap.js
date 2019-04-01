@@ -5,7 +5,6 @@ import {
     TouchableOpacity,
 } from 'react-native';
 import {Icon} from "react-native-elements";
-import { widgetWrap, ScreenEnum } from './MainContainer';
 
 export default class NavWrap extends Component {
     render() {
@@ -16,13 +15,13 @@ export default class NavWrap extends Component {
                 </View>
                 <View style={{backgroundColor: "#4285F4", height: 80.0, width: "100%", flexDirection: "row", padding: 0}}>
                     <View style={this.props.selected === 0 ? style.buttonWrapActive : style.buttonWrap}>
-                        <TouchableOpacity style={style.button} onPress={() => widgetWrap.displayScreen(ScreenEnum.Closet)}>
+                        <TouchableOpacity style={style.button} onPress={() => this.nav.displayScreen(global.ScreenEnum.Closet)}>
                             <Icon name="layers" color="white" iconStyle={{fontSize: 52}}/>
                             <Text style={style.buttonText}>Closet</Text>
                         </TouchableOpacity>
                     </View>
                     <View style={this.props.selected === 1 ? style.buttonWrapActive : style.buttonWrap}>
-                        <TouchableOpacity style={style.button} onPress={() => widgetWrap.displayScreen(ScreenEnum.Outfits)}>
+                        <TouchableOpacity style={style.button} onPress={() => this.nav.displayScreen(global.ScreenEnum.Outfits)}>
                             <Icon name="style" color="white" iconStyle={{fontSize: 52}}/>
                             <Text style={style.buttonText}>Outfits</Text>
                         </TouchableOpacity>
@@ -34,13 +33,13 @@ export default class NavWrap extends Component {
                         </TouchableOpacity>
                     </View>
                     <View style={this.props.selected === 3 ? style.buttonWrapActive : style.buttonWrap}>
-                        <TouchableOpacity style={style.button}>
+                        <TouchableOpacity style={style.button} onPress={() => this.nav.displayScreen(global.ScreenEnum.Feed)}>
                             <Icon name="comment" color="white" iconStyle={{fontSize: 48}}/>
                             <Text style={style.buttonText}>Feed</Text>
                         </TouchableOpacity>
                     </View>
                     <View style={this.props.selected === 4 ? style.buttonWrapActive : style.buttonWrap}>
-                        <TouchableOpacity style={style.button} onPress={() => widgetWrap.displayScreen(ScreenEnum.Profile)}>
+                        <TouchableOpacity style={style.button} onPress={() => this.nav.displayScreen(global.ScreenEnum.Profile)}>
                             <Icon name="account-circle" color="white" iconStyle={{fontSize: 48}}/>
                             <Text style={style.buttonText}>Profile</Text>
                         </TouchableOpacity>

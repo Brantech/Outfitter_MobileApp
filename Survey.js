@@ -5,7 +5,6 @@ import {
     Text,
     Button
 } from 'react-native';
-import {widgetWrap, ScreenEnum} from './MainContainer';
 
 const questions = require("./assets/sampleSurvey.json");
 
@@ -118,7 +117,7 @@ export default class Survey extends Component {
 
     onPress() {
         if(this.state.question === questions.length - 1) {
-            widgetWrap.displayScreen(ScreenEnum.Closet);
+            this.nav.displayScreen(global.ScreenEnum.Closet);
         } else {
             this.setState({question: this.state.question + 1, answer: [], reset: true})
         }
@@ -130,7 +129,7 @@ export default class Survey extends Component {
 
     render() {
         if(questions.length === 0) {
-            widgetWrap.displayScreen(ScreenEnum.Closet);
+            this.nav.displayScreen(global.ScreenEnum.Closet);
         }
 
         var question = <Question key={this.state.question} question={questions[this.state.question]} parent={this}/>;

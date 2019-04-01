@@ -8,14 +8,18 @@ import {
     Easing,
     Image,
     View,
+    AsyncStorage
 } from 'react-native';
 import spinner from '../assets/images/loading.gif';
-import {widgetWrap, ScreenEnum} from '../MainContainer';
+import {Auth} from 'aws-amplify';
+import aws_exports from '../aws-exports';
+
+Auth.configure(aws_exports);
 
 const DEVICE_WIDTH = Dimensions.get('window').width;
 const MARGIN = 40;
 
-export default class ButtonSubmit extends Component {
+export default class LoginButton extends Component {
     constructor() {
         super();
 
@@ -38,17 +42,32 @@ export default class ButtonSubmit extends Component {
             easing: Easing.linear,
         }).start();
 
-        setTimeout(() => {
-            this._onGrow();
-        }, 2000);
+        Auth.signOut().catch(err => console.log(err))
 
-        setTimeout(() => {
+        Auth.signIn({
+            username: this.props.usrField(),
+            password: this.props.pwdField(),
+        }).then(user => this.progressLogIn(user.signInUserSession))
+        .catch(err => {
+            console.log(err)
             this.setState({isLoading: false});
             this.buttonAnimated.setValue(0);
             this.growAnimated.setValue(0);
+        });
+    }
 
-            widgetWrap.displayScreen(ScreenEnum.Survey);
-        }, 2300);
+    progressLogIn(session) {
+        try {
+            AsyncStorage.setItem('accessToken', session["accessToken"]["jwtToken"])
+            AsyncStorage.setItem('idToken', session["idToken"]["jwtToken"])
+            AsyncStorage.setItem('refreshToken', session["refreshToken"]["token"])
+        } catch(error) {
+            console.error(error)
+        }
+
+        this._onGrow();
+
+        this.props.nav.displayScreen(global.ScreenEnum.Survey);
     }
 
     _onGrow() {
@@ -93,10 +112,8 @@ export default class ButtonSubmit extends Component {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        top: -95,
         alignItems: 'center',
-        justifyContent: 'flex-start',
+        justifyContent: 'flex-end',
     },
     button: {
         alignItems: 'center',

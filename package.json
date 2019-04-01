@@ -7,11 +7,18 @@
     "eject": "expo eject"
   },
   "dependencies": {
+    "aws-amplify": "^1.1.23",
+    "crypto": "^1.0.1",
     "expo": "^32.0.5",
+    "jsonwebtoken": "^8.5.1",
+    "jwk-to-pem": "^2.0.1",
     "react": "16.5.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz",
     "react-native-elements": "^0.19.1",
-    "react-native-router-flux": "^4.0.6"
+    "react-native-router-flux": "^4.0.6",
+    "stream": "0.0.2",
+    "util": "^0.11.1",
+    "vm": "^0.1.0"
   },
   "devDependencies": {
     "babel-preset-expo": "^5.0.0"
