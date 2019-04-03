@@ -8,7 +8,7 @@ import NavWrap from './NavWrap';
 import Profile from './Profile';
 import Feed from './Feed';
 
-const apiURL = "http://www.outfittr.net:3000/"
+const apiURL = "http://3.211.39.88:3000/"
 
 
 export default class MainContainer extends Component {

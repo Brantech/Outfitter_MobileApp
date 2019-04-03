@@ -117,7 +117,7 @@ export default class Survey extends Component {
 
     onPress() {
         if(this.state.question === questions.length - 1) {
-            this.nav.displayScreen(global.ScreenEnum.Closet);
+            this.props.nav.displayScreen(global.ScreenEnum.Closet);
         } else {
             this.setState({question: this.state.question + 1, answer: [], reset: true})
         }
