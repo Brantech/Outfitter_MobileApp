@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import ClosetItem from "../components/ClosetItem";
 import Garment from "../components/Garment";
+import {Icon} from "react-native-elements";
 
 let addIco = require("../assets/images/add.png");
 
@@ -73,7 +74,7 @@ export default class Closet extends Component {
                         var dirty = [];
 
                         for (var i = 0; i < res.data.length; i++) {
-                            var item = <ClosetItem key={i} garment={res.data[i]}/>;
+                            var item = <ClosetItem key={i} id={i} parent={this} garment={res.data[i]}/>;
 
                             if (res.data[i].tags.includes("clean")) {
                                 clean.push(item);
@@ -125,6 +126,30 @@ export default class Closet extends Component {
         }
     }
 
+    remove(item) {
+        if(item.props.garment.tags.includes("clean")) {
+            let clean = this.state.clean.filter(x => x.props.id !== item.props.id);
+            this.setState({clean: clean})
+        } else {
+            let dirty = this.state.dirty.filter(x => x.props.id !== item.props.id);
+            this.setState({dirty: dirty})
+        }
+    }
+
+    move(item) {
+        let clean = this.state.clean;
+        let dirty = this.state.dirty;
+
+        if(item.props.garment.tags.includes("clean")) {
+            clean.push(<ClosetItem key={(new Date()).getTime()} id={(new Date()).getTime()} parent={this} garment={item.props.garment}/>);
+            dirty = dirty.filter(x => x.props.id !== item.props.id);
+        } else {
+            clean = clean.filter(x => x.props.id !== item.props.id);
+            dirty.push(<ClosetItem key={(new Date()).getTime()} id={(new Date()).getTime()} parent={this} garment={item.props.garment}/>);
+        }
+        this.setState({clean: clean, dirty: dirty});
+    }
+
     render() {
         if (!this.state.ready) {
             this.init();
@@ -159,11 +184,11 @@ export default class Closet extends Component {
         clothes = [];
         if (this.state.modalMode === 0 && this.state.tops.length !== 0) {
             for (i = this.state.start; i < this.state.end + 1 && this.state.tops.length; i++) {
-                clothes.push(<Garment key={i} garment={this.state.tops[i]}/>)
+                clothes.push(<Garment key={i} parent={this} garment={this.state.tops[i]}/>)
             }
         } else if (this.state.bottoms.length !== 0) {
             for (i = this.state.start; i < this.state.end + 1 && this.state.bottoms.length; i++) {
-                clothes.push(<Garment key={i} garment={this.state.bottoms[i]}/>)
+                clothes.push(<Garment key={i} parent={this} garment={this.state.bottoms[i]}/>)
             }
         }
 
@@ -171,20 +196,19 @@ export default class Closet extends Component {
             <View style={{width: "100%", height: "100%"}}>
                 <View style={{
                     backgroundColor: "#4285F4",
-                    paddingTop: 35,
                     flexDirection: 'row',
                     alignItems: "center",
-                    paddingBottom: "3%",
+                    paddingTop: "1%",
+                    paddingBottom: "1%",
                     paddingRight: "3%"
                 }}>
+                    <Icon name="add" color="#4285F4"/>
+
                     <Text style={{textAlign: "center", color: "white", fontSize: 25, flex: 1}}>Closet</Text>
-                    <TouchableWithoutFeedback
-                        onPress={() => this.setState({modalVisible: true})}
-                    >
-                        <View style={{height: 50, width: 50, alignItems: "center", justifyContent: "center"}}>
-                            <Image source={addIco} style={{overlayColor: 'white', width: 36, height: 36}}/>
-                        </View>
-                    </TouchableWithoutFeedback>
+
+                    <TouchableOpacity style={{justifyContent: "center"}} onPress={() => this.setState({modalVisible: true})}>
+                        <Icon name="add" color="white"/>
+                    </TouchableOpacity>
                 </View>
 
                 <Modal

@@ -87,7 +87,7 @@ export default class RegisterButton extends Component {
                 <Animated.View style={{width: changeWidth}}>
                     <TouchableOpacity
                         style={styles.button}
-                        onPress={this._onPress}
+                        onPress={() => this._onPress()}
                         activeOpacity={1}>
                         {this.state.isLoading ? (
                             <Image source={spinner} style={styles.image}/>

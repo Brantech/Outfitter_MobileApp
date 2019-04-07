@@ -1,5 +1,5 @@
 import {Image, Modal, Text, TouchableOpacity, TouchableWithoutFeedback, View} from "react-native";
-import {Component, React} from "react";
+import React, {Component} from "react";
 
 let shirt = require("../assets/images/clothingSample.jpg");
 let pants = require("../assets/images/jeans.jpg");

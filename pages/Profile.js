@@ -11,8 +11,8 @@ export default class Profile extends Component {
             <View style={{width: "100%", height: "100%"}}>
                 <View style={{
                     backgroundColor: "#4285F4",
-                    paddingTop: 35,
-                    paddingBottom: 15,
+                    paddingTop: "1%",
+                    paddingBottom: "1%",
                     paddingLeft: "3%",
                     flexDirection: "row"
                 }}>

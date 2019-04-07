@@ -55,7 +55,7 @@ export default class LoginForm extends Component {
                     <TouchableOpacity
                         activeOpacity={0.7}
                         style={styles.btnEye}
-                        onPress={this.showPass}>
+                        onPress={() => this.showPass()}>
                         <Image source={eyeImg} style={styles.iconEye}/>
                     </TouchableOpacity>
                 </View>

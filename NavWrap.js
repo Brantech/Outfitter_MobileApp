@@ -6,6 +6,7 @@ export default class NavWrap extends Component {
     render() {
         return (
             <View style={{height: "100%", width: "100%"}}>
+                <View style={{height: "3%", backgroundColor: "black"}}/>
                 <View style={{flex: 1}}>
                     {this.props.content}
                 </View>

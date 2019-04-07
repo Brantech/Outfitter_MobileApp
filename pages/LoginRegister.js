@@ -24,8 +24,6 @@ export default class LoginRegister extends Component {
                         if (res["success"]) {
                             props.nav.displayScreen(global.ScreenEnum.Survey);
                         }
-                    } else {
-                        console.log(req.responseText);
                     }
                 };
                 req.open("GET", global.apiURL + 'users/' + token, true);
