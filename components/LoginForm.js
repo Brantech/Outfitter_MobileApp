@@ -1,12 +1,5 @@
 import React, {Component} from 'react';
-import {
-    StyleSheet,
-    KeyboardAvoidingView,
-    TouchableOpacity,
-    View,
-    Image,
-    Keyboard
-} from 'react-native';
+import {Image, Keyboard, KeyboardAvoidingView, StyleSheet, TouchableOpacity, View} from 'react-native';
 import LoginButton from './LoginButton';
 
 
@@ -34,35 +27,43 @@ export default class LoginForm extends Component {
             <KeyboardAvoidingView behavior="padding" style={styles.container}>
                 <View behavior="padding">
                     <UserInput
-                        ref={(input) => {this.usernameField = input}}
+                        ref={(input) => {
+                            this.usernameField = input
+                        }}
                         placeholder="Username"
                         autoCapitalize={'none'}
                         autoCorrect={false}
                         returnKeyType={"next"}
-                        onSubmitEditing={() => {this.passwordField.focus()}}
+                        onSubmitEditing={() => {
+                            this.passwordField.focus()
+                        }}
                     />
                     <UserInput
-                        ref={(input) => {this.passwordField = input}}
+                        ref={(input) => {
+                            this.passwordField = input
+                        }}
                         secureTextEntry={this.state.showPass}
                         placeholder="Password"
                         returnKeyType={'done'}
                         autoCapitalize={'none'}
                         autoCorrect={false}
                         onSubmitEditing={() => {
-                            Keyboard.dismiss()
-                            this.login._onPress()
+                            Keyboard.dismiss();
+                            this.login._onPress();
                         }}
-                    ></UserInput>
+                    />
                     <TouchableOpacity
                         activeOpacity={0.7}
                         style={styles.btnEye}
                         onPress={this.showPass}>
-                        <Image source={eyeImg} style={styles.iconEye} />
+                        <Image source={eyeImg} style={styles.iconEye}/>
                     </TouchableOpacity>
                 </View>
                 <View style={{flex: 1, justifyContent: "flex-end"}}>
-                    <LoginButton 
-                        ref={(input) => {this.login = input}}
+                    <LoginButton
+                        ref={(input) => {
+                            this.login = input
+                        }}
                         nav={this.props.nav}
                         usrField={() => this.usernameField.getText()}
                         pwdField={() => this.passwordField.getText()}/>

@@ -1,15 +1,10 @@
 import React, {Component} from 'react';
-import {
-    StyleSheet, 
-    View, 
-    Text,
-    AsyncStorage
-} from 'react-native';
+import {AsyncStorage, StyleSheet, Text, View} from 'react-native';
 import {Font} from 'expo';
-import LoginForm from './components/LoginForm';
-import RegisterForm from './components/RegisterForm';
-import Wallpaper from './components/Wallpaper';
-import SignupSection from './components/SignupSection';
+import LoginForm from '../components/LoginForm';
+import RegisterForm from '../components/RegisterForm';
+import Wallpaper from '../components/Wallpaper';
+import SignupSection from '../components/SignupSection';
 
 export default class LoginRegister extends Component {
     state = {
@@ -18,43 +13,45 @@ export default class LoginRegister extends Component {
     };
 
     constructor(props) {
-        super(props)
+        super(props);
 
         try {
             AsyncStorage.getItem('idToken').then((token) => {
                 var req = new XMLHttpRequest();
-                req.onreadystatechange = function() {
-                    if(req.readyState == 4 && req.status === 200) {
-                        res = JSON.parse(req.responseText)
-                        if(res["success"]) {
+                req.onreadystatechange = function () {
+                    if (req.readyState === 4 && req.status === 200) {
+                        res = JSON.parse(req.responseText);
+                        if (res["success"]) {
                             props.nav.displayScreen(global.ScreenEnum.Survey);
                         }
+                    } else {
+                        console.log(req.responseText);
                     }
-                }
-                req.open("GET", global.apiURL + 'users/' + token, true)
-                req.send(null)
+                };
+                req.open("GET", global.apiURL + 'users/' + token, true);
+                req.send(null);
             })
         } catch (error) {
-            console.error(error)
+            console.error(error);
         }
     }
 
     async componentDidMount() {
         await Font.loadAsync({
-            'bella-fashion': require('./assets/font/bella-fashion.ttf')
+            'bella-fashion': require('../assets/font/bella-fashion.ttf')
         });
 
-        this.setState({ fontLoaded: true });
+        this.setState({fontLoaded: true});
     }
 
     render() {
-        var form = []
+        var form = [];
 
-        if(this.state.mode === 0) {
-            form.push(<LoginForm key={0} nav={this.props.nav}/>)
-            form.push(<SignupSection key={1} parent={this}/>)
+        if (this.state.mode === 0) {
+            form.push(<LoginForm key={0} nav={this.props.nav}/>);
+            form.push(<SignupSection key={1} parent={this}/>);
         } else {
-            form.push(<RegisterForm key={0} parent={this}/>)
+            form.push(<RegisterForm key={0} parent={this}/>);
         }
 
         return (
@@ -78,7 +75,7 @@ const styles = StyleSheet.create({
         fontSize: 60,
         color: 'white',
         textShadowColor: 'rgba(0, 0, 0, 0.15)',
-        textShadowOffset: { width: -1, height: 0 },
+        textShadowOffset: {width: -1, height: 0},
         textShadowRadius: 100
     }
 });

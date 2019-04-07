@@ -1,20 +1,8 @@
 import React, {Component} from 'react';
-import {
-    StyleSheet,
-    KeyboardAvoidingView,
-    TouchableOpacity,
-    View,
-    Image,
-    ScrollView,
-    Keyboard
-} from 'react-native';
-import LoginButton from './LoginButton';
+import {Keyboard, KeyboardAvoidingView, ScrollView, StyleSheet, View} from 'react-native';
 
 
 import UserInput from './UserInput';
-
-import usernameImg from '../assets/images/username.png';
-import passwordImg from '../assets/images/password.png';
 import RegisterButton from './RegisterButton';
 
 export default class RegisterForm extends Component {
@@ -38,7 +26,9 @@ export default class RegisterForm extends Component {
             <KeyboardAvoidingView behavior="padding" style={styles.container}>
                 <ScrollView style={{flex: 1}}>
                     <UserInput
-                        ref={(input) => {this.firstName = input}}
+                        ref={(input) => {
+                            this.firstName = input
+                        }}
                         placeholder="First Name"
                         autoCapitalize={'none'}
                         autoCorrect={false}
@@ -46,7 +36,9 @@ export default class RegisterForm extends Component {
                         onSubmitEditing={() => this.lastName.focus()}
                     />
                     <UserInput
-                        ref={(input) => {this.lastName = input}}
+                        ref={(input) => {
+                            this.lastName = input
+                        }}
                         placeholder="Last Name"
                         autoCapitalize={'none'}
                         autoCorrect={false}
@@ -54,7 +46,9 @@ export default class RegisterForm extends Component {
                         onSubmitEditing={() => this.username.focus()}
                     />
                     <UserInput
-                        ref={(input) => {this.username = input}}
+                        ref={(input) => {
+                            this.username = input
+                        }}
                         placeholder="Username"
                         autoCapitalize={'none'}
                         autoCorrect={false}
@@ -62,7 +56,9 @@ export default class RegisterForm extends Component {
                         onSubmitEditing={() => this.email.focus()}
                     />
                     <UserInput
-                        ref={(input) => {this.email = input}}
+                        ref={(input) => {
+                            this.email = input
+                        }}
                         placeholder="Email"
                         autoCapitalize={'none'}
                         autoCorrect={false}
@@ -70,7 +66,9 @@ export default class RegisterForm extends Component {
                         onSubmitEditing={() => this.email2.focus()}
                     />
                     <UserInput
-                        ref={(input) => {this.email2 = input}}
+                        ref={(input) => {
+                            this.email2 = input
+                        }}
                         placeholder="Re-Type Email"
                         autoCapitalize={'none'}
                         autoCorrect={false}
@@ -78,7 +76,9 @@ export default class RegisterForm extends Component {
                         onSubmitEditing={() => this.password.focus()}
                     />
                     <UserInput
-                        ref={(input) => {this.password = input}}
+                        ref={(input) => {
+                            this.password = input
+                        }}
                         secureTextEntry={this.state.showPass}
                         placeholder="Password"
                         returnKeyType={'next'}
@@ -87,21 +87,25 @@ export default class RegisterForm extends Component {
                         onSubmitEditing={() => this.password2.focus()}
                     />
                     <UserInput
-                        ref={(input) => {this.password2 = input}}
+                        ref={(input) => {
+                            this.password2 = input
+                        }}
                         secureTextEntry={this.state.showPass}
                         placeholder="Re-Type Password"
                         returnKeyType={'done'}
                         autoCapitalize={'none'}
                         autoCorrect={false}
                         onSubmitEditing={() => {
-                            Keyboard.dismiss()
-                            this.register._onPress()
+                            Keyboard.dismiss();
+                            this.register._onPress();
                         }}
                     />
                 </ScrollView>
                 <View style={{height: "25%"}}>
                     <RegisterButton
-                        ref={(input) => {this.register = input}}
+                        ref={(input) => {
+                            this.register = input
+                        }}
                         fname={() => this.firstName.getText()}
                         lname={() => this.lastName.getText()}
                         username={() => this.username.getText()}

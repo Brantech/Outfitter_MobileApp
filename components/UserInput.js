@@ -1,31 +1,54 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import Dimensions from 'Dimensions';
-import {StyleSheet, View, TextInput, Image} from 'react-native';
+import {StyleSheet, TextInput, View} from 'react-native';
 
 export default class UserInput extends Component {
     constructor(props) {
-        super(props)
+        super(props);
 
         this.state = {
             text: ""
         }
     }
-    
+
     focus() {
         this.field.focus();
     }
 
     getText() {
-
-        return this.state["text"]
+        return this.state["text"];
     }
 
     render() {
+        const styles = StyleSheet.create({
+            input: {
+                backgroundColor: 'rgba(255, 255, 255, 0.4)',
+                width: global.DEVICE_WIDTH - 40,
+                height: 40,
+                marginHorizontal: 20,
+                paddingLeft: 20,
+                borderRadius: 20,
+                color: '#ffffff',
+            },
+            inputWrapper: {
+                marginBottom: 15
+            },
+            inlineImg: {
+                position: 'absolute',
+                zIndex: 99,
+                width: 22,
+                height: 22,
+                left: 35,
+                top: 9,
+            },
+        });
+
         return (
             <View style={styles.inputWrapper}>
                 <TextInput
-                    ref={(input) => {this.field = input}}
+                    ref={(input) => {
+                        this.field = input
+                    }}
                     style={styles.input}
                     placeholder={this.props.placeholder}
                     secureTextEntry={this.props.secureTextEntry}
@@ -50,29 +73,3 @@ UserInput.propTypes = {
     autoCapitalize: PropTypes.string,
     returnKeyType: PropTypes.string,
 };
-
-const DEVICE_WIDTH = Dimensions.get('window').width;
-
-const styles = StyleSheet.create({
-    input: {
-        backgroundColor: 'rgba(255, 255, 255, 0.4)',
-        width: DEVICE_WIDTH - 40,
-        height: 40,
-        marginHorizontal: 20,
-        //paddingLeft: 45,
-        paddingLeft: 20,
-        borderRadius: 20,
-        color: '#ffffff',
-    },
-    inputWrapper: {
-        marginBottom: 15
-    },
-    inlineImg: {
-        position: 'absolute',
-        zIndex: 99,
-        width: 22,
-        height: 22,
-        left: 35,
-        top: 9,
-    },
-});

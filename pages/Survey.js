@@ -1,24 +1,19 @@
 import React, {Component} from 'react';
-import {
-    View,
-    ScrollView,
-    Text,
-    Button
-} from 'react-native';
+import {Button, ScrollView, Text, View} from 'react-native';
 
-const questions = require("./assets/sampleSurvey.json");
+const questions = require("../assets/sampleSurvey.json");
 
 function arrayRemove(arr, value) {
 
-    return arr.filter(function(ele){
+    return arr.filter(function (ele) {
         return ele != value;
     });
- 
- }
+
+}
 
 class Question extends Component {
     constructor(props) {
-        super(props)
+        super(props);
 
         this.state = {
             selected: [],
@@ -27,8 +22,8 @@ class Question extends Component {
 
     update(key, remove = false) {
         var selected;
-        if(!this.props.question.multiselect) {
-            if(remove) {
+        if (!this.props.question.multiselect) {
+            if (remove) {
                 selected = [];
                 this.setState({selected: selected});
             } else {
@@ -36,26 +31,27 @@ class Question extends Component {
                 this.setState({selected: selected});
             }
         } else {
-            if(remove) {
-                selected = arrayRemove(this.state.selected, key)
+            if (remove) {
+                selected = arrayRemove(this.state.selected, key);
                 this.setState({selected: selected});
             } else {
-                selected = this.state.selected
-                selected.push(key)
+                selected = this.state.selected;
+                selected.push(key);
 
                 this.setState({selected: selected});
             }
         }
-        
+
         this.props.parent.update(selected);
     }
 
     render() {
         var choices = [];
 
-        for(var i in this.props.question.choices) {
-             choices.push(
-                <Choice key={i} index={i} choice={this.props.question.choices[i]} active={this.state.selected.includes(i)} parent={this}/>);
+        for (var i in this.props.question.choices) {
+            choices.push(
+                <Choice key={i} index={i} choice={this.props.question.choices[i]}
+                        active={this.state.selected.includes(i)} parent={this}/>);
         }
 
         return (
@@ -81,7 +77,7 @@ class Choice extends Component {
     }
 
     onPress() {
-        if(this.props.active) {
+        if (this.props.active) {
             this.props.active = false;
             this.props.parent.update(this.props.index, true);
         } else {
@@ -89,15 +85,15 @@ class Choice extends Component {
             this.props.parent.update(this.props.index, false);
         }
 
-        
+
     }
-    
+
     render() {
         return (
             <View style={{paddingBottom: "3%"}}>
                 <Button style={{marginTop: "1%", marginBottom: "1%", height: "15%"}}
-                color={this.props.active ? "#4285F4" : "gray"}
-                title={this.props.choice} onPress={() => this.onPress()}/>
+                        color={this.props.active ? "#4285F4" : "gray"}
+                        title={this.props.choice} onPress={() => this.onPress()}/>
             </View>
         )
     }
@@ -116,7 +112,7 @@ export default class Survey extends Component {
     }
 
     onPress() {
-        if(this.state.question === questions.length - 1) {
+        if (this.state.question === questions.length - 1) {
             this.props.nav.displayScreen(global.ScreenEnum.Closet);
         } else {
             this.setState({question: this.state.question + 1, answer: [], reset: true})
@@ -128,7 +124,7 @@ export default class Survey extends Component {
     }
 
     render() {
-        if(questions.length === 0) {
+        if (questions.length === 0) {
             this.nav.displayScreen(global.ScreenEnum.Closet);
         }
 
@@ -140,7 +136,13 @@ export default class Survey extends Component {
                     <Text style={{textAlign: "center", color: "white", fontSize: 25}}>Survey</Text>
                 </View>
                 <View>
-                    <Text style={{paddingTop: "5%", paddingLeft: "10%", paddingRight: "10%", fontSize: 16, color: "gray"}}>Before we begin, I have a few questions that I need to ask you first.</Text>
+                    <Text style={{
+                        paddingTop: "5%",
+                        paddingLeft: "10%",
+                        paddingRight: "10%",
+                        fontSize: 16,
+                        color: "gray"
+                    }}>Before we begin, I have a few questions that I need to ask you first.</Text>
                 </View>
 
                 <View style={{backgroundColor: "white", flex: 1, justifyContent: "center", alignItems: "center"}}>
@@ -149,7 +151,9 @@ export default class Survey extends Component {
                             {question}
                         </ScrollView>
                         <View>
-                            <Button disabled={this.state.answer.length == 0} title={this.state.question !== questions.length - 1 ? "Next" : "Done"} onPress={() => this.onPress()}/>
+                            <Button disabled={this.state.answer.length == 0}
+                                    title={this.state.question !== questions.length - 1 ? "Next" : "Done"}
+                                    onPress={() => this.onPress()}/>
                         </View>
                     </View>
                 </View>

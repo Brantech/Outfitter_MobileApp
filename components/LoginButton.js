@@ -1,15 +1,6 @@
 import React, {Component} from 'react';
 import Dimensions from 'Dimensions';
-import {
-    StyleSheet,
-    TouchableOpacity,
-    Text,
-    Animated,
-    Easing,
-    Image,
-    View,
-    AsyncStorage
-} from 'react-native';
+import {Animated, AsyncStorage, Easing, Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import spinner from '../assets/images/loading.gif';
 import {Auth} from 'aws-amplify';
 import aws_exports from '../aws-exports';
@@ -42,26 +33,27 @@ export default class LoginButton extends Component {
             easing: Easing.linear,
         }).start();
 
-        Auth.signOut().catch(err => console.log(err))
+        Auth.signOut().catch(err => console.log(err));
 
         Auth.signIn({
             username: this.props.usrField(),
             password: this.props.pwdField(),
         }).then(user => this.progressLogIn(user.signInUserSession))
-        .catch(err => {
-            console.log(err)
-            this.setState({isLoading: false});
-            this.buttonAnimated.setValue(0);
-            this.growAnimated.setValue(0);
-        });
+            .catch(err => {
+                console.log(err);
+                this.setState({isLoading: false});
+                this.buttonAnimated.setValue(0);
+                this.growAnimated.setValue(0);
+            });
     }
 
     progressLogIn(session) {
         try {
-            AsyncStorage.setItem('accessToken', session["accessToken"]["jwtToken"])
-            AsyncStorage.setItem('idToken', session["idToken"]["jwtToken"])
+            console.log(session["idToken"]["jwtToken"]);
+            AsyncStorage.setItem('accessToken', session["accessToken"]["jwtToken"]);
+            AsyncStorage.setItem('idToken', session["idToken"]["jwtToken"]);
             AsyncStorage.setItem('refreshToken', session["refreshToken"]["token"])
-        } catch(error) {
+        } catch (error) {
             console.error(error)
         }
 
@@ -96,7 +88,7 @@ export default class LoginButton extends Component {
                         onPress={this._onPress}
                         activeOpacity={1}>
                         {this.state.isLoading ? (
-                            <Image source={spinner} style={styles.image} />
+                            <Image source={spinner} style={styles.image}/>
                         ) : (
                             <Text style={styles.text}>LOGIN</Text>
                         )}

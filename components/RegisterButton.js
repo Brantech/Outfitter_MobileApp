@@ -1,21 +1,11 @@
 import React, {Component} from 'react';
-import Dimensions from 'Dimensions';
-import {
-    StyleSheet,
-    TouchableOpacity,
-    Text,
-    Animated,
-    Easing,
-    Image,
-    View,
-} from 'react-native';
+import {Animated, Easing, Image, StyleSheet, Text, TouchableOpacity, View,} from 'react-native';
 import spinner from '../assets/images/loading.gif';
 import {Auth} from 'aws-amplify';
 import aws_exports from '../aws-exports';
 
 Auth.configure(aws_exports);
 
-const DEVICE_WIDTH = Dimensions.get('window').width;
 const MARGIN = 40;
 
 export default class RegisterButton extends Component {
@@ -33,8 +23,8 @@ export default class RegisterButton extends Component {
 
     _onPress() {
         if (this.state.isLoading) return;
-        
-        if(
+
+        if (
             this.props.fname() === "" || this.props.lname() === "" ||
             this.props.username() === "" ||
             this.props.password() === "" || this.props.password2() === "" ||
@@ -60,40 +50,32 @@ export default class RegisterButton extends Component {
                 family_name: this.props.lname(),
                 name: this.props.fname()
             }
-        }
+        };
 
         Auth.signUp(payload)
-        .then(data => {
-            this.props.parent.setState({mode: 0})
-            
-            var req = new XMLHttpRequest();
-            req.open("POST", global.apiURL + 'users/', true)
-            req.setRequestHeader("Content-Type", "application/json")
-            req.send(JSON.stringify({
-                uid: data['userSub'],
-                username: data['user']['username']
-            }))
-        })
-        .catch(err => {
-            console.log(err)
-            this.setState({isLoading: false});
-            this.buttonAnimated.setValue(0);
-            this.growAnimated.setValue(0);
-        });
-    }
+            .then(data => {
+                this.props.parent.setState({mode: 0});
 
-    _onGrow() {
-        Animated.timing(this.growAnimated, {
-            toValue: 1,
-            duration: 200,
-            easing: Easing.linear,
-        }).start();
+                var req = new XMLHttpRequest();
+                req.open("POST", global.apiURL + 'users/', true);
+                req.setRequestHeader("Content-Type", "application/json");
+                req.send(JSON.stringify({
+                    uid: data['userSub'],
+                    username: data['user']['username']
+                }));
+            })
+            .catch(err => {
+                console.log(err);
+                this.setState({isLoading: false});
+                this.buttonAnimated.setValue(0);
+                this.growAnimated.setValue(0);
+            });
     }
 
     render() {
         const changeWidth = this.buttonAnimated.interpolate({
             inputRange: [0, 1],
-            outputRange: [DEVICE_WIDTH - MARGIN, MARGIN],
+            outputRange: [global.DEVICE_WIDTH - MARGIN, MARGIN],
         });
         const changeScale = this.growAnimated.interpolate({
             inputRange: [0, 1],
@@ -108,7 +90,7 @@ export default class RegisterButton extends Component {
                         onPress={this._onPress}
                         activeOpacity={1}>
                         {this.state.isLoading ? (
-                            <Image source={spinner} style={styles.image} />
+                            <Image source={spinner} style={styles.image}/>
                         ) : (
                             <Text style={styles.text}>Register</Text>
                         )}
