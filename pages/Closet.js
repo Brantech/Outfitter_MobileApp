@@ -198,8 +198,8 @@ export default class Closet extends Component {
                     backgroundColor: "#4285F4",
                     flexDirection: 'row',
                     alignItems: "center",
-                    paddingTop: "1%",
-                    paddingBottom: "1%",
+                    height: "8%",
+                    paddingLeft: "3%",
                     paddingRight: "3%"
                 }}>
                     <Icon name="add" color="#4285F4"/>

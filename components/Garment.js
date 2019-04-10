@@ -24,6 +24,7 @@ export default class Garment extends Component {
                 req.setRequestHeader("Content-Type", "application/json");
                 req.send(JSON.stringify({
                     garment_id: this.props.garment._id,
+                    src: this.props.garment.src,
                     tags: ["clean"],
                 }))
             })

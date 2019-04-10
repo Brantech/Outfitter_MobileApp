@@ -153,7 +153,8 @@ export default class Survey extends Component {
                         <View>
                             <Button disabled={this.state.answer.length == 0}
                                     title={this.state.question !== questions.length - 1 ? "Next" : "Done"}
-                                    onPress={() => this.onPress()}/>
+                                    onPress={() => this.onPress()}
+                                    color="#4285F4"/>
                         </View>
                     </View>
                 </View>
