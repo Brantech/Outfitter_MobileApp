@@ -49,7 +49,6 @@ export default class LoginButton extends Component {
 
     progressLogIn(session) {
         try {
-            console.log(session["idToken"]["jwtToken"]);
             AsyncStorage.setItem('accessToken', session["accessToken"]["jwtToken"]);
             AsyncStorage.setItem('idToken', session["idToken"]["jwtToken"]);
             AsyncStorage.setItem('refreshToken', session["refreshToken"]["token"])
@@ -60,6 +59,20 @@ export default class LoginButton extends Component {
         this._onGrow();
 
         this.props.nav.displayScreen(global.ScreenEnum.Survey);
+
+        var req = new XMLHttpRequest();
+        req.onreadystatechange = () => {
+            if(req.readyState === 4 && req.status === 200) {
+                let res = JSON.parse(req.responseText);
+                console.log(res);
+            } else if(req.readyState === 4) {
+                console.log(JSON.parse(req.responseText))
+            }
+        };
+        req.open("POST", global.apiURL + 'api/users/', true);
+        req.setRequestHeader("Content-Type", "application/json");
+        req.setRequestHeader("x-access-token", session['accessToken']['jwtToken']);
+        req.send(null);
     }
 
     _onGrow() {

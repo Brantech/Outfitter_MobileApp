@@ -55,14 +55,6 @@ export default class RegisterButton extends Component {
         Auth.signUp(payload)
             .then(data => {
                 this.props.parent.setState({mode: 0});
-
-                var req = new XMLHttpRequest();
-                req.open("POST", global.apiURL + 'users/', true);
-                req.setRequestHeader("Content-Type", "application/json");
-                req.send(JSON.stringify({
-                    uid: data['userSub'],
-                    username: data['user']['username']
-                }));
             })
             .catch(err => {
                 console.log(err);

@@ -6,23 +6,8 @@ export default class ClosetItem extends Component {
         super(props);
 
         this.state = {
-            src: "null",
             modalVisible: false
         };
-
-        this.init();
-    }
-
-    init() {
-        let garment = new XMLHttpRequest();
-        garment.onreadystatechange = () => {
-            if (garment.readyState === 4 && garment.status === 200) {
-                res = JSON.parse(garment.responseText);
-                this.setState({src: res.data.src});
-            }
-        };
-        garment.open("GET", global.apiURL + "garments/" + this.props.garment.garment_id, true);
-        garment.send(null)
     }
 
     move() {
@@ -36,7 +21,7 @@ export default class ClosetItem extends Component {
             this.props.garment.tags.push("clean");
         }
 
-        AsyncStorage.getItem('idToken').then((token) => {
+        AsyncStorage.getItem('accessToken').then((token) => {
             let req = new XMLHttpRequest();
             req.onreadystatechange = () => {
                 if (req.readyState === 4 && req.status === 200) {
@@ -44,18 +29,17 @@ export default class ClosetItem extends Component {
 
                     this.setState({modalVisible: false});
                     this.props.parent.move(this);
-                }else {
-                    console.log(req.responseText)
                 }
             };
-            req.open("PUT", global.apiURL + "wardrobe/" + token + "/update/" + this.props.garment.garment_id);
+            req.open("PUT", global.apiURL + "api/users/garments/" + this.props.garment.garment_id);
             req.setRequestHeader("Content-Type", "application/json");
+            req.setRequestHeader("x-access-token", token);
             req.send(JSON.stringify({tags: this.props.garment.tags}));
         });
     }
 
     delete() {
-        AsyncStorage.getItem('idToken').then((token) => {
+        AsyncStorage.getItem('accessToken').then((token) => {
             let xhr = new XMLHttpRequest();
             xhr.onreadystatechange = () => {
                 if (xhr.readyState === 4 && xhr.status === 200) {
@@ -67,7 +51,8 @@ export default class ClosetItem extends Component {
                     }
                 }
             };
-            xhr.open("DELETE", global.apiURL + "wardrobe/" + token + "/update/" + this.props.garment.garment_id);
+            xhr.open("DELETE", global.apiURL + "api/users/garments/" + this.props.garment.garment_id);
+            xhr.setRequestHeader("x-access-token", token);
             xhr.send(null);
         })
     }
@@ -76,7 +61,7 @@ export default class ClosetItem extends Component {
         return (
             <TouchableOpacity onPress={() => this.setState({modalVisible: true})}>
                 <View style={{height: global.DEVICE_WIDTH / 2 - 30, margin: 15, marginBottom: 0,}}>
-                    <Image style={{width: "100%", height: "100%"}} source={{uri: this.state.src}}/>
+                    <Image style={{width: "100%", height: "100%"}} source={{uri: this.props.garment.src}}/>
                     <Modal
                         animationType="fade"
                         transparent={true}

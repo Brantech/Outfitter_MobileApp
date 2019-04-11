@@ -16,7 +16,7 @@ export default class LoginRegister extends Component {
         super(props);
 
         try {
-            AsyncStorage.getItem('idToken').then((token) => {
+            AsyncStorage.getItem('accessToken').then((token) => {
                 var req = new XMLHttpRequest();
                 req.onreadystatechange = function () {
                     if (req.readyState === 4 && req.status === 200) {
@@ -24,9 +24,12 @@ export default class LoginRegister extends Component {
                         if (res["success"]) {
                             props.nav.displayScreen(global.ScreenEnum.Survey);
                         }
+                    } else if(req.readyState === 4) {
+                        console.log(JSON.parse(req.responseText))
                     }
                 };
-                req.open("GET", global.apiURL + 'users/' + token, true);
+                req.open("GET", global.apiURL + 'api/users/ping', true);
+                req.setRequestHeader("x-access-token", token);
                 req.send(null);
             })
         } catch (error) {

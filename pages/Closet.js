@@ -32,6 +32,7 @@ export default class Closet extends Component {
             dirty: [],
             tops: [],
             bottoms: [],
+            offset: 0,
             start: 0,
             end: 5
         }
@@ -41,29 +42,7 @@ export default class Closet extends Component {
         this.setState({ready: true});
 
         let self = this;
-        let garments = new XMLHttpRequest();
-        garments.onreadystatechange = () => {
-            if (garments.readyState === 4 && garments.status === 200) {
-
-                res = JSON.parse(garments.responseText);
-                tops = [];
-                bottoms = [];
-
-                for (i = 0; i < res['data'].length; i++) {
-                    if (res['data'][i]['type'] === 'top')
-                        tops.push(res['data'][i]);
-
-                    if (res['data'][i]['type'] === 'bottom')
-                        bottoms.push(res['data'][i]);
-                }
-
-                self.setState({tops: tops, bottoms: bottoms})
-            }
-        };
-        garments.open("GET", global.apiURL + 'garments/', true);
-        garments.send(null);
-
-        AsyncStorage.getItem('idToken').then((token) => {
+        AsyncStorage.getItem('accessToken').then((token) => {
             let wardrobe = new XMLHttpRequest();
             wardrobe.onreadystatechange = () => {
                 if (wardrobe.readyState === 4 && wardrobe.status === 200) {
@@ -73,10 +52,10 @@ export default class Closet extends Component {
                         var clean = [];
                         var dirty = [];
 
-                        for (var i = 0; i < res.data.length; i++) {
-                            var item = <ClosetItem key={i} id={i} parent={this} garment={res.data[i]}/>;
+                        for (var i = 0; i < res.data.garments.length; i++) {
+                            var item = <ClosetItem key={i} id={i} parent={this} garment={res.data.garments[i]}/>;
 
-                            if (res.data[i].tags.includes("clean")) {
+                            if (res.data.garments[i].tags.includes("clean")) {
                                 clean.push(item);
                             } else {
                                 dirty.push(item);
@@ -87,43 +66,92 @@ export default class Closet extends Component {
                     }
                 }
             };
-            wardrobe.open("GET", global.apiURL + "wardrobe/" + token, true);
-            wardrobe.send(null)
+            wardrobe.open("GET", global.apiURL + "api/users/garments/?limit=200", true);
+            wardrobe.setRequestHeader("x-access-token", token);
+            wardrobe.send(null);
+
+
+            let garments = new XMLHttpRequest();
+            garments.onreadystatechange = () => {
+                if(garments.readyState === 4 && garments.status === 200) {
+                    let res = JSON.parse(garments.responseText);
+
+                    self.setState({tops: res.data});
+                }
+            };
+            garments.open("GET", global.apiURL + 'api/garments/?limit=6&offset=' + this.state.offset + "&category=" + 'top', true);
+            garments.setRequestHeader("x-access-token", token);
+            garments.send(null);
         })
     }
 
-    decrement() {
-        if (this.state.start === 0) {
-            return;
-        }
+    fetchGarments() {
+        let self = this;
+        AsyncStorage.getItem('accessToken').then((token) => {
+            let garments = new XMLHttpRequest();
+            garments.onreadystatechange = () => {
+                if (garments.readyState === 4 && garments.status === 200) {
+                    let res = JSON.parse(garments.responseText);
 
-        if (this.state.end - this.state.start !== 5) {
-            if (this.state.modalMode === 0) {
-                this.setState({
-                    start: Math.max(this.state.end - this.state.tops.length % 6 - 5, 0),
-                    end: this.state.end - this.state.tops.length % 6
-                })
-            } else {
-                this.setState({
-                    start: Math.max(this.state.end - this.state.bottoms.length % 6 - 5, 0),
-                    end: this.state.end - this.state.bottoms.length % 6
-                })
-            }
-        } else {
-            this.setState({start: Math.max(this.state.start - 6, 0), end: this.state.end - 6})
-        }
+                    if (res.data.length !== 0) {
+                        if (this.state.modalMode === 0) {
+                            self.setState({tops: res.data});
+                        } else {
+                            self.setState({bottoms: res.data});
+                        }
+                    }
+                }
+            };
+            garments.open("GET", global.apiURL + 'api/garments/?limit=6&offset=' + this.state.offset + "&category=" + (this.state.modalMode === 0 ? 'top' : 'bottom'), true);
+            garments.setRequestHeader("x-access-token", token);
+            garments.send(null);
+        });
+    }
+
+    decrement() {
+        let self = this;
+        AsyncStorage.getItem('accessToken').then((token) => {
+            let garments = new XMLHttpRequest();
+            garments.onreadystatechange = () => {
+                if (garments.readyState === 4 && garments.status === 200) {
+                    let res = JSON.parse(garments.responseText);
+
+                    if (res.data.length !== 0) {
+                        if (this.state.modalMode === 0) {
+                            self.setState({tops: res.data, offset: Math.max(this.state.offset - 6, 0)});
+                        } else {
+                            self.setState({bottoms: res.data, offset: Math.max(this.state.offset - 6, 0)});
+                        }
+                    }
+                }
+            };
+            garments.open("GET", global.apiURL + 'api/garments/?limit=6&offset=' + (Math.max(this.state.offset - 6, 0)) + "&category=" + (this.state.modalMode === 0 ? 'top' : 'bottom'), true);
+            garments.setRequestHeader("x-access-token", token);
+            garments.send(null);
+        });
     }
 
     increment() {
+        let self = this;
+        AsyncStorage.getItem('accessToken').then((token) => {
+            let garments = new XMLHttpRequest();
+            garments.onreadystatechange = () => {
+                if (garments.readyState === 4 && garments.status === 200) {
+                    let res = JSON.parse(garments.responseText);
 
-        if (this.state.modalMode === 0 && this.state.end < this.state.tops.length - 1) {
-            this.setState({start: this.state.start + 6, end: Math.min(this.state.end + 6, this.state.tops.length - 1)})
-        } else if (this.state.modalMode === 1 && this.state.end < this.state.bottoms.length - 1) {
-            this.setState({
-                start: this.state.start + 6,
-                end: Math.min(this.state.end + 6, this.state.bottoms.length - 1)
-            })
-        }
+                    if (res.data.length !== 0) {
+                        if (this.state.modalMode === 0) {
+                            self.setState({tops: res.data, offset: this.state.offset + 6});
+                        } else {
+                            self.setState({bottoms: res.data, offset: this.state.offset + 6});
+                        }
+                    }
+                }
+            };
+            garments.open("GET", global.apiURL + 'api/garments/?limit=6&offset=' + (this.state.offset + 6) + "&category=" + (this.state.modalMode === 0 ? 'top' : 'bottom'), true);
+            garments.setRequestHeader("x-access-token", token);
+            garments.send(null);
+        });
     }
 
     remove(item) {
@@ -182,12 +210,12 @@ export default class Closet extends Component {
         };
 
         clothes = [];
-        if (this.state.modalMode === 0 && this.state.tops.length !== 0) {
-            for (i = this.state.start; i < this.state.end + 1 && this.state.tops.length; i++) {
+        if (this.state.modalMode === 0) {
+            for (i = 0; i < this.state.tops.length; i++) {
                 clothes.push(<Garment key={i} parent={this} garment={this.state.tops[i]}/>)
             }
-        } else if (this.state.bottoms.length !== 0) {
-            for (i = this.state.start; i < this.state.end + 1 && this.state.bottoms.length; i++) {
+        } else {
+            for (i = 0; i < this.state.bottoms.length; i++) {
                 clothes.push(<Garment key={i} parent={this} garment={this.state.bottoms[i]}/>)
             }
         }
@@ -217,7 +245,7 @@ export default class Closet extends Component {
                     visible={this.state.modalVisible}
                     onRequestClose={() => null}
                 >
-                    <TouchableWithoutFeedback onPressOut={(e) => this.setState({modalVisible: false})}>
+                    <TouchableWithoutFeedback onPressOut={  (e) => this.setState({modalVisible: false})   }>
                         <View style={{
                             width: "100%",
                             height: "100%",
@@ -237,7 +265,8 @@ export default class Closet extends Component {
                                 }}>
                                     <View style={{flexDirection: "row"}}>
                                         <TouchableOpacity style={{width: "50%"}} onPress={() => {
-                                            this.setState({modalMode: 0, start: 0, end: 5})
+                                            this.setState({modalMode: 0, offset: 0});
+                                            this.fetchGarments();
                                         }}>
                                             <View
                                                 style={this.state.modalMode === 0 ? innerStyle.enabledPopupButton : innerStyle.disabledPopupButton}>
@@ -246,7 +275,8 @@ export default class Closet extends Component {
                                             </View>
                                         </TouchableOpacity>
                                         <TouchableOpacity style={{width: "50%"}} onPress={() => {
-                                            this.setState({modalMode: 1, start: 0, end: 5})
+                                            this.setState({modalMode: 1, offset: 0})
+                                            this.fetchGarments();
                                         }}>
                                             <View
                                                 style={this.state.modalMode === 1 ? innerStyle.enabledPopupButton : innerStyle.disabledPopupButton}>
