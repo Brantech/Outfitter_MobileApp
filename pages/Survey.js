@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Button, ScrollView, Text, View} from 'react-native';
+import {AsyncStorage, Button, Picker, ScrollView, Text, View} from 'react-native';
 
 const questions = require("../assets/sampleSurvey.json");
 
@@ -17,6 +17,7 @@ class Question extends Component {
 
         this.state = {
             selected: [],
+            dropdown: 0,
         }
     }
 
@@ -30,6 +31,7 @@ class Question extends Component {
                 selected = [key];
                 this.setState({selected: selected});
             }
+            this.props.parent.update(parseInt(key, 10));
         } else {
             if (remove) {
                 selected = arrayRemove(this.state.selected, key);
@@ -40,18 +42,42 @@ class Question extends Component {
 
                 this.setState({selected: selected});
             }
+            this.props.parent.update(selected);
         }
-
-        this.props.parent.update(selected);
     }
 
     render() {
-        var choices = [];
+        let choices = [];
 
-        for (var i in this.props.question.choices) {
-            choices.push(
-                <Choice key={i} index={i} choice={this.props.question.choices[i]}
-                        active={this.state.selected.includes(i)} parent={this}/>);
+        if (this.props.question.choices.length < 6) {
+            for (let i in this.props.question.choices) {
+                choices.push(
+                    <Choice key={i} index={i} choice={this.props.question.choices[i]}
+                            active={this.state.selected.includes(i)} parent={this}/>);
+            }
+        }
+        else {
+            for (let i = 0; i < this.props.question.choices.length; i++) {
+                choices.push(<Picker.Item key={i} label={this.props.question.choices[i]} value={i}/>);
+            }
+
+            if(this.state.ready == null) {
+                this.setState({ready: true});
+                this.props.parent.setState({answer: 0});
+            }
+
+            choices =
+                <Picker
+                    mode={"dropdown"}
+                    selectedValue={this.state.dropdown}
+                    onValueChange={(val, index) => {
+                        this.setState({dropdown: val});
+                        this.props.parent.setState({answer: val});
+                    }
+                    }
+                >
+                    {choices}
+                </Picker>
         }
 
         return (
@@ -107,12 +133,25 @@ export default class Survey extends Component {
         this.state = {
             question: 0,
             answer: [],
-            reset: true
+            reset: true,
+            payload: {},
         }
+
+        AsyncStorage.getItem('userInfo').then((info) => {
+            if(info != null) {
+                this.props.nav.displayScreen(global.ScreenEnum.Closet);
+            }
+        });
     }
 
     onPress() {
+        var payload = this.state.payload;
+        payload[questions[this.state.question].tag] = this.state.answer;
+
+        this.setState({payload: payload});
+
         if (this.state.question === questions.length - 1) {
+            AsyncStorage.setItem('userInfo', JSON.stringify(payload));
             this.props.nav.displayScreen(global.ScreenEnum.Closet);
         } else {
             this.setState({question: this.state.question + 1, answer: [], reset: true})
@@ -128,7 +167,7 @@ export default class Survey extends Component {
             this.nav.displayScreen(global.ScreenEnum.Closet);
         }
 
-        var question = <Question key={this.state.question} question={questions[this.state.question]} parent={this}/>;
+        let question = <Question key={this.state.question} question={questions[this.state.question]} parent={this}/>;
 
         return (
             <View style={{display: "flex", height: "100%"}}>
@@ -151,7 +190,7 @@ export default class Survey extends Component {
                             {question}
                         </ScrollView>
                         <View>
-                            <Button disabled={this.state.answer.length == 0}
+                            <Button disabled={this.state.answer.length === 0}
                                     title={this.state.question !== questions.length - 1 ? "Next" : "Done"}
                                     onPress={() => this.onPress()}
                                     color="#4285F4"/>

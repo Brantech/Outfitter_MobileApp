@@ -12,8 +12,7 @@ import {
     Image,
 } from 'react-native';
 import {Icon} from 'react-native-elements';
-import Category from '../components/Category';
-import CategoryDisplay from '../components/CategoryDisplay';
+import OutfitItem from "../components/OutfitItem";
 
 const weatherFactors = ['Sunny', 'Cloudy', 'Windy', 'Rainy'];
 const temperatureFactors = ['Cold', 'Hot', 'Neutral'];
@@ -24,18 +23,37 @@ export default class Outfits extends Component {
         super(props);
 
         this.state = {
-            category: null,
-            modalVisible: false,
-            formality: 1,
-            temperature: 0,
-            weather: 0,
-            season: 0,
             ai: true,
-            modalMode: 0,
+            category: null,
+            formality: 1,
             generated: [{src: "/"}, {src: "/"}],
+            modalMode: 0,
+            modalVisible: false,
+            outfits: [],
             rated: false,
             rating: 0,
-        }
+            season: 0,
+            temperature: 0,
+            weather: 0,
+        };
+
+        this.init();
+    }
+
+    init() {
+        AsyncStorage.getItem('accessToken').then((token) => {
+            var req = new XMLHttpRequest();
+            req.onreadystatechange = () => {
+                if(req.readyState === 4 && req.status === 200) {
+                    var res = JSON.parse(req.responseText);
+
+                    this.setState({outfits: res.data.outfits, profile: res.data});
+                }
+            };
+            req.open("GET", global.apiURL + 'api/users/info', true);
+            req.setRequestHeader("x-access-token", token);
+            req.send(null);
+        });
     }
 
     openCategory(category) {
@@ -43,41 +61,71 @@ export default class Outfits extends Component {
     }
 
     generate() {
-        AsyncStorage.getItem('idToken').then((token) => {
-            let req = new XMLHttpRequest();
-            req.onreadystatechange = () => {
+
+        AsyncStorage.getItem('userInfo').then((info) => {
+            AsyncStorage.getItem('accessToken').then((token) => {
+                let payload = JSON.parse(info);
+                payload.formality = this.state.formality;
+                payload.weather = this.state.weather;
+                payload.season = this.state.season;
+
+                let req = new XMLHttpRequest();
+                req.onreadystatechange = () => {
+                    if(req.readyState === 4 && req.status === 200) {
+                        let res = JSON.parse(req.responseText);
+
+                        this.setState({modalMode: 1, generated: res.data[0], rated: false, rating: 0});
+                    } else if(req.readyState === 4) {
+                        console.log(JSON.parse(req.responseText))
+                    }
+                };
+                req.open("GET", global.apiURL + "api/users/garments/generateOutfits/?random=true");
+                req.setRequestHeader("x-access-token", token);
+                req.setRequestHeader("Content-Type", "application/json");
+                req.send(payload)
+            });
+        });
+    }
+
+    nextOutfit() {
+
+    }
+
+    addOutfit() {
+        let payload = {
+            garments: [this.state.generated[0]._id, this.state.generated[1]._id],
+            rating: this.state.rating,
+            numberOfRatings: 0,
+            communityRating: 0,
+        };
+
+        AsyncStorage.getItem('accessToken').then((token) => {
+           let req = new XMLHttpRequest();
+           req.onreadystatechange = () => {
                 if(req.readyState === 4 && req.status === 200) {
                     let res = JSON.parse(req.responseText);
 
-                    let outfits = res.data.filter(x => x[0].tags.includes("clean") && x[1].tags.includes("clean"));
-
-                    if(outfits.length === 0)
-                        return;
-
-                    if(this.state.ai) {
-                        // TODO: rate all of the outfits and choose the best
-                    } else {
-                        let rand = Math.floor(Math.random() * outfits.length);
-
-                        this.setState({modalMode: 1, generated: outfits[rand], rated: false, rating: 0});
-                    }
+                    this.setState({modalMode: 0, modalVisible: false})
+                } else if(req.readyState === 4) {
+                    console.log(JSON.parse(req.responseText))
                 }
-            };
-            req.open("GET", global.apiURL + "wardrobe/wardrobecombos/" + token);
-            req.send(null)
+           };
+           req.open("POST", global.apiURL + "api/users/outfits/", true);
+           req.setRequestHeader("x-access-token", token);
+           req.setRequestHeader("Content-Type", "application/json");
+           req.send(JSON.stringify(payload));
+           console.log(payload)
         });
     }
 
     render() {
-        var content;
-        if (this.state.category != null) {
-            content = <CategoryDisplay category={this.state.category}/>
-        } else {
-            content = [];
-            content.push(<Category key={0} text="Favorited" parent={this}/>);
-            content.push(<Category key={1} text="Dating" parent={this}/>);
-            content.push(<Category key={2} text="Work" parent={this}/>);
-            content.push(<Category key={3} text="Casual" parent={this}/>);
+        var content = [];
+        for(let i = 0; i < this.state.outfits.length; i++) {
+            content.push(<OutfitItem key={i} parent={this}
+                                     top={this.state.profile.garments.find((e) => e._id === this.state.outfits[i].garments[0])}
+                                     bottom={this.state.profile.garments.find((e) => e._id === this.state.outfits[i].garments[1])}
+                                     outfit={this.state.outfits[i]}/>
+                         );
         }
 
         let formalities = [];
@@ -256,11 +304,11 @@ export default class Outfits extends Component {
                                         <View style={{flexDirection: "row"}}>
                                             <View style={{width: "50%"}}>
                                                 <Image style={{width: "100%", height: global.DEVICE_WIDTH * .9 * .94 * .5}}
-                                                       source={{uri: this.state.generated[0].src}} />
+                                                       source={{uri: this.state.generated[0].imageSource}} />
                                             </View>
                                             <View style={{width: "50%"}}>
                                                 <Image style={{width: "100%", height: global.DEVICE_WIDTH * .9 * .94 * .5}}
-                                                       source={{uri: this.state.generated[1].src}} />
+                                                       source={{uri: this.state.generated[1].imageSource}} />
                                             </View>
                                         </View>
 
@@ -268,13 +316,13 @@ export default class Outfits extends Component {
                                             {rating}
                                         </View>
 
-                                        <TouchableOpacity style={{marginBottom: "5%"}} onPress={() => this.generate()}>
+                                        <TouchableOpacity style={{marginBottom: "5%"}} onPress={() => this.nextOutfit()}>
                                             <View style={{backgroundColor: "#4285F4", width: "100%", height: 50, borderRadius: 10, borderWidth: 1, justifyContent: "center", borderColor: "#4285F4"}}>
                                                 <Text style={{color: "white", textAlign: "center", fontSize: 26}}>Generate Another</Text>
                                             </View>
                                         </TouchableOpacity>
 
-                                        <TouchableOpacity  onPress={() => {if(this.state.rated) this.generate()}}>
+                                        <TouchableOpacity  onPress={() => {if(this.state.rated) this.addOutfit()}}>
                                             <View style={{backgroundColor: this.state.rated ? "#4285F4" : "gray", width: "100%", height: 50, borderRadius: 10, borderWidth: 1, justifyContent: "center", borderColor: this.state.rated ? "#4285F4" : "gray"}}>
                                                 <Text style={{color: "white", textAlign: "center", fontSize: 26}}>Save</Text>
                                             </View>
@@ -288,7 +336,9 @@ export default class Outfits extends Component {
                 </Modal>
 
                 <ScrollView style={{flex: 1}}>
-                    {content}
+                    <View style={{flexDirection: 'row', width: "100%"}}>
+                        {content}
+                    </View>
                 </ScrollView>
             </View>
         )

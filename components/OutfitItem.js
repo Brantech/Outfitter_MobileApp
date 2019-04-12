@@ -1,15 +1,50 @@
-import {Image, Modal, Text, TouchableOpacity, TouchableWithoutFeedback, View} from "react-native";
+import {AsyncStorage, Image, Modal, Text, TouchableOpacity, TouchableWithoutFeedback, View} from "react-native";
 import React, {Component} from "react";
 
-let shirt = require("../assets/images/clothingSample.jpg");
-let pants = require("../assets/images/jeans.jpg");
-
 export default class OutfitItem extends Component {
-    state = {
-        modalVisible: false
-    };
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            modalVisible: false,
+            ready1: false,
+            ready2: false,
+            top: {},
+            bottom: {}
+        };
+
+    }
+
+    delete() {
+        AsyncStorage.getItem('accessToken').then((token) => {
+            let req = new XMLHttpRequest();
+            req.onreadystatechange = () => {
+                if(req.readyState === 4 && req.status === 200) {
+                    let res = JSON.parse(req.responseText);
+
+                    let outfits = this.props.parent.state.outfits;
+
+                    console.log(outfits);
+                    let index = 0;
+                    for(let i = 0; i < outfits.length; i++) {
+                        if(outfits[i]._id === this.props.outfit._id) {
+                            index = i;
+                        }
+                    }
+
+                    outfits.splice(index, 1);
+                    this.props.parent.setState({outfits: outfits});
+                    this.setState({modalVisible: false});
+                }
+            };
+            req.open("DELETE", global.apiURL + 'api/users/outfits/' + this.props.outfit._id, true);
+            req.setRequestHeader("x-access-token", token);
+            req.send(null);
+        });
+    }
 
     render() {
+
         const style = {
 
             itemImageWrap: {
@@ -36,6 +71,15 @@ export default class OutfitItem extends Component {
                 borderColor: "#4285F4",
                 borderRadius: 25,
                 borderWidth: 1
+            },
+            deleteButton: {
+                backgroundColor: "red",
+                width: global.DEVICE_WIDTH * 0.64 * 0.9,
+                height: 50,
+                justifyContent: "center",
+                borderColor: "red",
+                borderRadius: 25,
+                borderWidth: 1
             }
         };
 
@@ -60,14 +104,14 @@ export default class OutfitItem extends Component {
                                     padding: "3%",
                                     paddingBottom: 0,
                                     width: "70%",
-                                    height: "40%",
+                                    height: "50%",
                                     backgroundColor: "white",
                                     borderRadius: 10,
                                     borderWidth: 1
                                 }}>
                                     <View style={{flex: 1, flexDirection: "row"}}>
-                                        <Image style={{width: "50%", height: "100%"}} source={shirt}/>
-                                        <Image style={{width: "50%", height: "100%"}} source={pants}/>
+                                        <Image style={{width: "50%", height: "100%"}} source={{uri: this.props.top.imageSource}}/>
+                                        <Image style={{width: "50%", height: "100%"}} source={{uri: this.props.bottom.imageSource}}/>
                                     </View>
                                     <View style={{
                                         flex: 1,
@@ -84,13 +128,22 @@ export default class OutfitItem extends Component {
                                                 }}>Wear</Text>
                                             </View>
                                         </TouchableOpacity>
-                                        <TouchableOpacity>
+                                        <TouchableOpacity style={{marginBottom: "4%"}}>
                                             <View style={innerStyle.popupButton}>
                                                 <Text style={{
                                                     color: "white",
                                                     textAlign: "center",
                                                     fontSize: 16
                                                 }}>Share</Text>
+                                            </View>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={() => this.delete()}>
+                                            <View style={innerStyle.deleteButton}>
+                                                <Text style={{
+                                                    color: "white",
+                                                    textAlign: "center",
+                                                    fontSize: 16
+                                                }}>Delete</Text>
                                             </View>
                                         </TouchableOpacity>
                                     </View>
@@ -104,9 +157,9 @@ export default class OutfitItem extends Component {
                     <View style={style.itemImageWrap}
                           elevation={5}>
                         <Image style={{width: global.DEVICE_WIDTH * 0.23 - 2, height: global.DEVICE_WIDTH * 0.23 - 15}}
-                               source={shirt}/>
+                               source={{uri: this.props.top.imageSource}}/>
                         <Image style={{width: global.DEVICE_WIDTH * 0.23 - 2, height: global.DEVICE_WIDTH * 0.23 - 15}}
-                               source={pants}/>
+                               source={{uri: this.props.bottom.imageSource}}/>
                     </View>
                 </TouchableOpacity>
             </View>

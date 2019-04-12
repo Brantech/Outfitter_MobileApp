@@ -61,7 +61,7 @@ export default class ClosetItem extends Component {
         return (
             <TouchableOpacity onPress={() => this.setState({modalVisible: true})}>
                 <View style={{height: global.DEVICE_WIDTH / 2 - 30, margin: 15, marginBottom: 0,}}>
-                    <Image style={{width: "100%", height: "100%"}} source={{uri: this.props.garment.src}}/>
+                    <Image style={{width: "100%", height: "100%"}} source={{uri: this.props.garment.imageSource}}/>
                     <Modal
                         animationType="fade"
                         transparent={true}

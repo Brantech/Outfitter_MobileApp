@@ -34,7 +34,7 @@ export default class Garment extends Component {
                 req.send(JSON.stringify({
                     garment_id: this.props.garment._id,
                     category: this.props.garment.category,
-                    src: this.props.garment.imageSource,
+                    imageSource: this.props.garment.imageSource,
                     tags: ["clean"],
                 }))
             })

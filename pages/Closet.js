@@ -13,8 +13,6 @@ import ClosetItem from "../components/ClosetItem";
 import Garment from "../components/Garment";
 import {Icon} from "react-native-elements";
 
-let addIco = require("../assets/images/add.png");
-
 export default class Closet extends Component {
     state = {
         modalVisible: false,

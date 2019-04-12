@@ -28,7 +28,7 @@ export default class LoginRegister extends Component {
                         console.log(JSON.parse(req.responseText))
                     }
                 };
-                req.open("GET", global.apiURL + 'api/users/ping', true);
+                req.open("GET", global.apiURL + 'api/users/info', true);
                 req.setRequestHeader("x-access-token", token);
                 req.send(null);
             })
