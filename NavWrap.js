@@ -27,7 +27,8 @@ export default class NavWrap extends Component {
                         </TouchableOpacity>
                     </View>
                     <View style={this.props.selected === 2 ? style.buttonWrapActive : style.buttonWrap}>
-                        <TouchableOpacity style={style.button}>
+                        <TouchableOpacity style={style.button}
+                                          onPress={() => this.props.nav.displayScreen(global.ScreenEnum.History)}>
                             <Icon name="history" color="white" iconStyle={{fontSize: 48}}/>
                             <Text style={style.buttonText}>History</Text>
                         </TouchableOpacity>

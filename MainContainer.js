@@ -8,6 +8,7 @@ import NavWrap from './NavWrap';
 import Profile from './pages/Profile';
 import Feed from './pages/Feed';
 import Dimensions from 'Dimensions';
+import History from "./pages/History";
 
 
 const apiURL = "http://3.211.39.88:3000/";
@@ -18,7 +19,7 @@ export default class MainContainer extends Component {
     constructor(props) {
         super(props);
 
-        global.ScreenEnum = {Login: 1, Survey: 2, Closet: 3, Outfits: 4, Feed: 6, Profile: 7};
+        global.ScreenEnum = {Login: 1, Survey: 2, Closet: 3, Outfits: 4, History: 5, Feed: 6, Profile: 7};
         global.apiURL = apiURL;
         global.DEVICE_WIDTH = DEVICE_WIDTH;
 
@@ -47,19 +48,22 @@ export default class MainContainer extends Component {
                 widget = <LoginRegister nav={this}/>;
                 break;
             case global.ScreenEnum.Survey:
-                widget = <Survey nav={this} apiURL={apiURL}/>;
+                widget = <Survey nav={this}/>;
                 break;
             case global.ScreenEnum.Closet:
-                widget = <NavWrap nav={this} content={<Closet apiURL={apiURL}/>} selected={0}/>;
+                widget = <NavWrap nav={this} content={<Closet/>} selected={0}/>;
                 break;
             case global.ScreenEnum.Outfits:
-                widget = <NavWrap nav={this} content={<Outfits apiURL={apiURL}/>} selected={1}/>;
+                widget = <NavWrap nav={this} content={<Outfits/>} selected={1}/>;
+                break;
+            case global.ScreenEnum.History:
+                widget = <NavWrap nav={this} content={<History />} selected={2}/>;
                 break;
             case global.ScreenEnum.Feed:
-                widget = <NavWrap nav={this} content={<Feed apiURL={apiURL}/>} selected={3}/>;
+                widget = <NavWrap nav={this} content={<Feed/>} selected={3}/>;
                 break;
             case global.ScreenEnum.Profile:
-                widget = <NavWrap nav={this} content={<Profile apiURL={apiURL}/>} selected={4}/>;
+                widget = <NavWrap nav={this} content={<Profile main={this}/>} selected={4}/>;
                 break;
         }
 

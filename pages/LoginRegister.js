@@ -5,6 +5,7 @@ import LoginForm from '../components/LoginForm';
 import RegisterForm from '../components/RegisterForm';
 import Wallpaper from '../components/Wallpaper';
 import SignupSection from '../components/SignupSection';
+import {Auth} from "aws-amplify";
 
 export default class LoginRegister extends Component {
     state = {
@@ -21,11 +22,9 @@ export default class LoginRegister extends Component {
                 req.onreadystatechange = function () {
                     if (req.readyState === 4 && req.status === 200) {
                         res = JSON.parse(req.responseText);
-                        if (res["success"]) {
-                            props.nav.displayScreen(global.ScreenEnum.Survey);
-                        }
-                    } else if(req.readyState === 4) {
-                        console.log(JSON.parse(req.responseText))
+
+                        props.nav.displayScreen(global.ScreenEnum.Survey);
+                        Auth.currentUserInfo().then(info => global.user = info);
                     }
                 };
                 req.open("GET", global.apiURL + 'api/users/info', true);

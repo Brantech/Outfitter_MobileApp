@@ -11,28 +11,26 @@ export default class Garment extends Component {
                     if(req.readyState === 4 && req.status === 200) {
                         let res = JSON.parse(req.responseText);
 
-                        if(res.success) {
-                            let garment = null;
-                            for(let i = 0; i < res.data.garments.length; i++) {
-                                if(res.data.garments[i].garment_id === this.props.garment._id) {
-                                    garment = res.data.garments[i];
-                                    break;
-                                }
+                        let garment = null;
+                        for(let i = 0; i < res.data.garments.length; i++) {
+                            if(res.data.garments[i]._id === this.props.garment._id) {
+                                garment = res.data.garments[i];
+                                break;
                             }
-
-                            let clean = this.props.parent.state.clean;
-                            clean.push(<ClosetItem key={(new Date()).getTime()} id={(new Date()).getTime()}
-                                                   parent={this.props.parent} garment={garment}/>);
-
-                            this.props.parent.setState({clean: clean});
                         }
+
+                        let clean = this.props.parent.state.clean;
+                        clean.push(<ClosetItem key={(new Date()).getTime()} id={(new Date()).getTime()}
+                                               parent={this.props.parent} garment={garment}/>);
+
+                        this.props.parent.setState({clean: clean});
                     }
                 };
                 req.open("POST", global.apiURL + 'api/users/garments/', true);
                 req.setRequestHeader("Content-Type", "application/json");
                 req.setRequestHeader("x-access-token", token);
                 req.send(JSON.stringify({
-                    garment_id: this.props.garment._id,
+                    _id: this.props.garment._id,
                     category: this.props.garment.category,
                     imageSource: this.props.garment.imageSource,
                     tags: ["clean"],

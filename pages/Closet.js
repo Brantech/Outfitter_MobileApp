@@ -46,22 +46,20 @@ export default class Closet extends Component {
                 if (wardrobe.readyState === 4 && wardrobe.status === 200) {
                     res = JSON.parse(wardrobe.responseText);
 
-                    if (res.success) {
-                        var clean = [];
-                        var dirty = [];
+                    var clean = [];
+                    var dirty = [];
 
-                        for (var i = 0; i < res.data.garments.length; i++) {
-                            var item = <ClosetItem key={i} id={i} parent={this} garment={res.data.garments[i]}/>;
+                    for (var i = 0; i < res.data.garments.length; i++) {
+                        var item = <ClosetItem key={i} id={i} parent={this} garment={res.data.garments[i]}/>;
 
-                            if (res.data.garments[i].tags.includes("clean")) {
-                                clean.push(item);
-                            } else {
-                                dirty.push(item);
-                            }
+                        if (res.data.garments[i].tags.includes("clean")) {
+                            clean.push(item);
+                        } else {
+                            dirty.push(item);
                         }
-
-                        this.setState({clean: clean, dirty: dirty});
                     }
+
+                    this.setState({clean: clean, dirty: dirty});
                 }
             };
             wardrobe.open("GET", global.apiURL + "api/users/garments/?limit=200", true);
@@ -301,13 +299,9 @@ export default class Closet extends Component {
                                                 </View>
                                             </TouchableOpacity>
 
-                                            <Text style={{flex: 1, textAlign: "center"}}>
-                                                <Text>{Math.floor((this.state.start + 1) / 6) + 1}</Text>
-                                                <Text> / </Text>
-                                                <Text>{this.state.modalMode === 0 ? Math.floor(this.state.tops.length / 6) + 1 : Math.floor(this.state.bottoms.length / 6) + 1}</Text>
-                                            </Text>
+                                            <View style={{flex: 1}}/>
 
-                                            <TouchableOpacity style={{width: "25%"}} onPress={() => {
+                                            <TouchableOpacity style={{width: "25%",}} onPress={() => {
                                                 this.increment()
                                             }}>
                                                 <View style={{

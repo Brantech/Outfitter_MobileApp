@@ -24,7 +24,8 @@ export default class Outfits extends Component {
 
         this.state = {
             ai: true,
-            category: null,
+            categories: [],
+            category: 0,
             formality: 1,
             generated: [{src: "/"}, {src: "/"}],
             modalMode: 0,
@@ -35,6 +36,7 @@ export default class Outfits extends Component {
             season: 0,
             temperature: 0,
             weather: 0,
+            loading: false,
         };
 
         this.init();
@@ -45,9 +47,16 @@ export default class Outfits extends Component {
             var req = new XMLHttpRequest();
             req.onreadystatechange = () => {
                 if(req.readyState === 4 && req.status === 200) {
-                    var res = JSON.parse(req.responseText);
+                    let res = JSON.parse(req.responseText);
 
-                    this.setState({outfits: res.data.outfits, profile: res.data});
+                    let categories = {All: true, Uncategorized: true,};
+                    for(let i in res.data.outfits) {
+                        if(res.data.outfits[i].category != null && res.data.outfits[i].category.trim() !== "") {
+                            categories[res.data.outfits[i].category] = true;
+                        }
+                    }
+
+                    this.setState({outfits: res.data.outfits, profile: res.data, categories: Object.keys(categories).sort()});
                 }
             };
             req.open("GET", global.apiURL + 'api/users/info', true);
@@ -56,39 +65,50 @@ export default class Outfits extends Component {
         });
     }
 
-    openCategory(category) {
-        this.setState({category: category.props.text});
-    }
-
     generate() {
+        if(this.state.loading) {
+            return;
+        }
 
+        this.setState({loading: true})
         AsyncStorage.getItem('userInfo').then((info) => {
             AsyncStorage.getItem('accessToken').then((token) => {
                 let payload = JSON.parse(info);
                 payload.formality = this.state.formality;
                 payload.weather = this.state.weather;
                 payload.season = this.state.season;
+                payload.temperature = this.state.temperature;
 
                 let req = new XMLHttpRequest();
                 req.onreadystatechange = () => {
                     if(req.readyState === 4 && req.status === 200) {
                         let res = JSON.parse(req.responseText);
 
-                        this.setState({modalMode: 1, generated: res.data[0], rated: false, rating: 0});
-                    } else if(req.readyState === 4) {
-                        console.log(JSON.parse(req.responseText))
+                        let generated = [];
+                        for(let i in res.data) {
+                            generated.push(res.data[i].outfit);
+                        }
+
+                        let curr = generated.pop();
+
+                        this.setState({modalMode: 1, stack: generated, generated: curr, rated: false, rating: 0, loading: false});
                     }
                 };
-                req.open("GET", global.apiURL + "api/users/garments/generateOutfits/?random=true");
+                req.open("GET", global.apiURL + "api/users/recommendations/?" + Object.keys(payload).map((key) => key + '=' + encodeURIComponent(payload[key])).join('&'));
                 req.setRequestHeader("x-access-token", token);
-                req.setRequestHeader("Content-Type", "application/json");
-                req.send(payload)
+                req.send(null)
             });
         });
     }
 
     nextOutfit() {
-
+        if(this.state.stack.length !== 0) {
+            let stack = this.state.stack;
+            let curr = stack.pop();
+            this.setState({generated: curr, stack: stack});
+        } else {
+            this.generate();
+        }
     }
 
     addOutfit() {
@@ -105,27 +125,41 @@ export default class Outfits extends Component {
                 if(req.readyState === 4 && req.status === 200) {
                     let res = JSON.parse(req.responseText);
 
-                    this.setState({modalMode: 0, modalVisible: false})
-                } else if(req.readyState === 4) {
-                    console.log(JSON.parse(req.responseText))
+                    let categories = {All: true, Uncategorized: true};
+                    for(let i in res.data.outfits) {
+                        if(res.data.outfits[i].category != null && res.data.outfits[i].category.trim() !== "") {
+                            categories[res.data.outfits[i].category] = true;
+                        }
+                    }
+
+                    this.setState({modalMode: 0, modalVisible: false, outfits: res.data.outfits, categories: Object.keys(categories).sort()});
                 }
            };
            req.open("POST", global.apiURL + "api/users/outfits/", true);
            req.setRequestHeader("x-access-token", token);
            req.setRequestHeader("Content-Type", "application/json");
            req.send(JSON.stringify(payload));
-           console.log(payload)
         });
     }
 
     render() {
-        var content = [];
+        let categories = [];
+        for(let i = 0; i < this.state.categories.length; i++) {
+            categories.push(<Picker.Item key={i} value={i} label={this.state.categories[i]}/>);
+        }
+
+        let content = [];
         for(let i = 0; i < this.state.outfits.length; i++) {
-            content.push(<OutfitItem key={i} parent={this}
-                                     top={this.state.profile.garments.find((e) => e._id === this.state.outfits[i].garments[0])}
-                                     bottom={this.state.profile.garments.find((e) => e._id === this.state.outfits[i].garments[1])}
-                                     outfit={this.state.outfits[i]}/>
-                         );
+            if( this.state.categories[this.state.category] === "All" ||
+                ((this.state.outfits[i].category == null ||
+                this.state.outfits[i].category.trim() === "") && this.state.categories[this.state.category] === "Uncategorized") ||
+                this.state.outfits[i].category === this.state.categories[this.state.category]) {
+                content.push(<OutfitItem key={i} id={i} parent={this}
+                                         top={this.state.profile.garments.find((e) => e._id === this.state.outfits[i].garments[0])}
+                                         bottom={this.state.profile.garments.find((e) => e._id === this.state.outfits[i].garments[1])}
+                                         outfit={this.state.outfits[i]}/>
+                );
+            }
         }
 
         let formalities = [];
@@ -212,16 +246,6 @@ export default class Outfits extends Component {
                                         height: "100%",
                                         justifyContent: "center"
                                     }}>
-                                        <View style={{flexDirection: "row"}}>
-                                            <Text style={{flex: 1, textAlign: "right", lineHeight: 25}}>AI Generator</Text>
-                                            <Switch
-                                                value={this.state.ai}
-                                                onValueChange={(val) => this.setState({ai: val})}
-                                                thumbColor="#4285F4"
-                                                trackColor="#4285F4"
-                                            />
-                                        </View>
-
                                         <Text style={{fontSize: 18, marginBottom: "10%"}}>Please fill out some information about the event you want an outfit for.</Text>
 
                                         <View style={{flexDirection: "row", marginBottom: "5%"}}>
@@ -335,8 +359,20 @@ export default class Outfits extends Component {
                     </TouchableWithoutFeedback>
                 </Modal>
 
-                <ScrollView style={{flex: 1}}>
-                    <View style={{flexDirection: 'row', width: "100%"}}>
+                <View style={{borderColor: 'black', borderWidth: 1, margin: "3%"}}>
+                    <Picker
+                        mode={"dropdown"}
+                        selectedValue={this.state.category}
+                        onValueChange={(val, index) =>
+                            this.setState({category: val})
+                        }
+                    >
+                        {categories}
+                    </Picker>
+                </View>
+
+                <ScrollView style={{flex: 1, paddingLeft: "3%", paddingRight: "3%"}}>
+                    <View style={{flexDirection: 'row', flexWrap: "wrap", width: "100%"}}>
                         {content}
                     </View>
                 </ScrollView>
@@ -348,7 +384,7 @@ export default class Outfits extends Component {
 class Star extends Component {
     render() {
         return (
-            <TouchableOpacity onPress={() => {this.props.parent.setState({rating: this.props.val, rated: true}); console.log(this.props.val)}}>
+            <TouchableOpacity onPress={() => this.props.parent.setState({rating: this.props.val, rated: true})}>
                 <Icon name={this.props.type} color={this.props.color} size={global.DEVICE_WIDTH * 0.9 * 0.94 * 0.20}/>
             </TouchableOpacity>
         )

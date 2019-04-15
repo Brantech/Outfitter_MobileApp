@@ -31,7 +31,7 @@ export default class ClosetItem extends Component {
                     this.props.parent.move(this);
                 }
             };
-            req.open("PUT", global.apiURL + "api/users/garments/" + this.props.garment.garment_id);
+            req.open("PUT", global.apiURL + "api/users/garments/" + this.props.garment._id);
             req.setRequestHeader("Content-Type", "application/json");
             req.setRequestHeader("x-access-token", token);
             req.send(JSON.stringify({tags: this.props.garment.tags}));
@@ -51,7 +51,7 @@ export default class ClosetItem extends Component {
                     }
                 }
             };
-            xhr.open("DELETE", global.apiURL + "api/users/garments/" + this.props.garment.garment_id);
+            xhr.open("DELETE", global.apiURL + "api/users/garments/" + this.props.garment._id);
             xhr.setRequestHeader("x-access-token", token);
             xhr.send(null);
         })
