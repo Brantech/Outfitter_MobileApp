@@ -184,6 +184,12 @@ export default class FeedItem extends Component {
                             <Image style={{width: global.DEVICE_WIDTH * 0.46 - 2, height: global.DEVICE_WIDTH * 0.46}}
                                    source={{uri: this.state.ready2 ? this.state.bottom : '/'}}/>
                         </View>
+                        <View>
+                            <Text style={{fontSize: 20}}>
+                                <Text>Worn by </Text>
+                                <Text style={{textDecorationLine: "underline"}}>{this.props.user}</Text>
+                            </Text>
+                        </View>
                         <View style={{flexDirection: "row"}}>
                             {rating}
                         </View>
